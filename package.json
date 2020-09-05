@@ -1,0 +1,19 @@
+{
+  "name": "usc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "nekosu",
+  "license": "MIT",
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "utf-8-validate": "^5.0.2",
+    "ws": "^7.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.8.1"
+  }
+}

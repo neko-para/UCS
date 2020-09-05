@@ -1,0 +1,41 @@
+<html>
+
+<head>
+	<title>UCS</title>
+</head>
+
+<body>
+	<style>
+		body {
+			margin: 0px
+		}
+		#root {
+			display: flex;
+			flex-direction: row;
+		}
+		#right {
+			display: flex;
+			flex-direction: column;
+		}
+		#info {
+			background: #7FCFCF;
+			height: 240px;
+			width: 360px;
+		}
+		#item {
+			background: #CF7FCF;
+			height: 240px;
+			width: 360px;
+		}
+	</style>
+	<div id='root'>
+		<canvas id='main' width='640' height='480'></canvas>
+		<div id='right'>
+			<span id='info'></span>
+			<span id='item'></span>
+		</div>
+	</div>
+	<script src='clients.js'></script>
+</body>
+
+</html>
