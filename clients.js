@@ -27,7 +27,7 @@ let dmoney = 0;
 
 // let randomBuffer = [];
 
-const data = {
+const Data = {
 	armor: {
 		time: 10000,
 		cost: 4,
@@ -144,7 +144,7 @@ function resolveAction(item) {
 				item.actionQueue = item.actionQueue.slice(1);
 				item.timeout = null;
 				resolveAction(item);
-			}, data[act.type].time);
+			}, Data[act.type].time);
 		} else if (item.cata == 'infantry') {
 			item.timeout = setTimeout(() => {
 				newItem({
@@ -157,7 +157,7 @@ function resolveAction(item) {
 				item.actionQueue = item.actionQueue.slice(1);
 				item.timeout = null;
 				resolveAction(item);
-			}, data[act.type].time);
+			}, Data[act.type].time);
 		}
 		break;
 	}
@@ -185,12 +185,12 @@ function resolveAction(item) {
 			dx: dx,
 			dy: dy
 		}));
-		let time = data[item.cata].speed;
+		let time = Data[item.cata].speed;
 		let dh = altitude[item.posx][item.posy] - altitude[item.posx + dx][item.posy + dy];
 		if (dh > 0) {
-			time *= 1 + data[item.cata].down * dh;
+			time *= 1 + Data[item.cata].down * dh;
 		} else {
-			time *= 1 - data[item.cata].up * dh;
+			time *= 1 - Data[item.cata].up * dh;
 		}
 		item.timeout = setTimeout(() => {
 			item.timeout = null;
@@ -331,7 +331,7 @@ function updateView() {
 				if (nx < 0 || ny < 0 || nx >= sizex || ny >= sizey) {
 					continue;
 				}
-				view[nx][ny] = altitude[nx][ny] <= baseh;
+				view[nx][ny] = view[nx][ny] || altitude[nx][ny] <= baseh;
 			}
 			break;
 		case 'unit': {
@@ -455,8 +455,8 @@ document.onkeypress = function (e) {
 		case 'city':
 			switch (e.which) {
 			case 97: // a
-				if (money >= data.armor.cost) {
-					money -= data.armor.cost;
+				if (money >= Data.armor.cost) {
+					money -= Data.armor.cost;
 					select.actionQueue.push({
 						action: 'create',
 						type: 'armor'
@@ -464,8 +464,8 @@ document.onkeypress = function (e) {
 				}
 				break;
 			case 105: // i
-				if (money >= data.infantry.cost) {
-					money -= data.infantry.cost;
+				if (money >= Data.infantry.cost) {
+					money -= Data.infantry.cost;
 					select.actionQueue.push({
 						action: 'create',
 						type: 'infantry'
@@ -478,8 +478,8 @@ document.onkeypress = function (e) {
 			if (!queryItemAt(select.posx, select.posy).filter(i => { return i.type == 'building'; }).length) {
 				switch (e.which) {
 				case 99:
-					if (money >= data.city.cost) {
-						money -= data.city.cost;
+					if (money >= Data.city.cost) {
+						money -= Data.city.cost;
 						select.actionQueue.push({
 							action: 'create',
 							type: 'city'
@@ -487,8 +487,8 @@ document.onkeypress = function (e) {
 					}
 					break;
 				case 102:
-					if (money >= data.fortress.cost) {
-						money -= data.fortress.cost;
+					if (money >= Data.fortress.cost) {
+						money -= Data.fortress.cost;
 						select.actionQueue.push({
 							action: 'create',
 							type: 'fortress'
@@ -578,7 +578,7 @@ ws.onmessage = function (e) {
 			for (let i = 0; i < tits.length; ++i) {
 				let obj = tits[i];
 				if (obj.type == 'building') {
-					def = data[obj.cata].defend;
+					def = Data[obj.cata].defend;
 				} else {
 					if (obj.id == id) {
 						break;
