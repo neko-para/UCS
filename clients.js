@@ -122,7 +122,17 @@ function updateInfo() {
 }
 
 function resolveAction(item) {
+	let found = false;
+	for (let i = 0; i < items.length; ++i) {
+		if (items[i].hash == item.hash) {
+			found = true;
+			break;
+		}
+	}
 	if (item.actionQueue.length == 0) {
+		return;
+	}
+	if (!found) {
 		return;
 	}
 	if (item.timeout) {
@@ -240,7 +250,13 @@ document.onclick = function (e) {
 		itemList.push(null);
 		select = itemList[selectSkip % itemList.length];
 		if (select) {
-			seleInfo = `Type: ${select.type}\nCatagory: ${select.cata}\n` + (select.id == id ? 'This is your unit.' : '');
+			seleInfo = `Type: ${select.type}\nCatagory: ${select.cata}\n`;
+			if (select.type == 'unit') {
+				seleInfo += `State: ${select.state}\n`;
+			}
+			if (select.id == id) {
+				seleInfo += 'This is your unit.';
+			}
 		} else {
 			seleInfo = `Type: block\nHeight: ${altitude[x][y]}`;
 		}
@@ -575,12 +591,14 @@ ws.onmessage = function (e) {
 			};
 			let battle = false;
 			let def = 0;
+			let build = null;
 			for (let i = 0; i < tits.length; ++i) {
 				let obj = tits[i];
 				if (obj.type == 'building') {
 					def = Data[obj.cata].defend;
+					build = obj;
 				} else {
-					if (obj.id == id) {
+					if (obj.id == item.id) {
 						break;
 					} else {
 						battle = true;
@@ -588,10 +606,40 @@ ws.onmessage = function (e) {
 					}
 				}
 			}
-
-			item.posx += data.dx;
-			item.posy += data.dy;
-
+			if (battle) {
+				let attack = item.state * Data[item.cata].attack * (1 - dh * 0.1);
+				let defend = (state.infantry * Data.infantry.attack + state.armor * Data.armor.attack) * (1 + def);
+				if (attack > defend) {
+					if (build) {
+						build.id = item.id;
+					}
+					item.posx += data.dx;
+					item.posy += data.dy;
+					item.state *= 1 - defend / attack;
+					items = items.filter(i => {
+						if (i.posx == nx && i.posy == ny) {
+							return i.id == item.id;
+						} else {
+							return true;
+						}
+					});
+				} else {
+					let k = 1 - attack / defend;
+					for (let i = 0; i < tits.length; ++i) {
+						let obj = tits[i];
+						if (obj.type == 'unit') {
+							obj.state *= k;
+						}
+					}
+					items = items.filter(i => { return i != item; });
+				}
+			} else {
+				if (build) {
+					build.id = item.id;
+				}
+				item.posx += data.dx;
+				item.posy += data.dy;
+			}
 			updateView();
 			render();
 			break;

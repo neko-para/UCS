@@ -39,7 +39,7 @@ wss.on('connection', function (ws) {
 						peer[i].send(JSON.stringify(data));
 					}
 				});
-			};
+			}
 		})(clients);
 		clients = [];
 	}
